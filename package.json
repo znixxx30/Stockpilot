@@ -1,0 +1,21 @@
+{
+  "name": "stockpilot",
+  "version": "1.0.0",
+  "description": "StockPilot is a backend-driven inventory and order management system built with Node.js and Express.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/znixxx30/Stockpilot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/znixxx30/Stockpilot/issues"
+  },
+  "homepage": "https://github.com/znixxx30/Stockpilot#readme"
+}
