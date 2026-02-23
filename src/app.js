@@ -8,6 +8,7 @@ const db = require('./config/db');
 const authRoutes = require('./routes/auth.routes');
 const productRoutes = require('./routes/product.routes'); // ✅ ADD THIS
 const orderRoutes = require('./routes/order.routes');
+const analyticsRoutes = require('./routes/analytics.routes');
 const { verifyToken, requireAdmin } = require('./middlewares/auth.middleware');
 
 const app = express();
@@ -20,6 +21,7 @@ app.use('/api/auth', authRoutes);
 
 app.use('/api/products', productRoutes); // ✅ ADD THIS
 app.use('/api/orders', orderRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 
 // Protected Route
