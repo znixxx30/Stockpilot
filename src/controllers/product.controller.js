@@ -13,6 +13,18 @@ exports.create = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+//update
+exports.update = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await productService.updateProduct(id, req.body);
+
+    res.json({ message: "Product updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 // Get all
 exports.getAll = async (req, res) => {

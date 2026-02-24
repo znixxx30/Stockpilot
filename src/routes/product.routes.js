@@ -10,4 +10,7 @@ router.post('/', verifyToken, requireAdmin, productController.create);
 // Logged-in users can view
 router.get('/', verifyToken, productController.getAll);
 
+// 🔥 ADD THIS — Admin updates product
+router.put('/:id', verifyToken, requireAdmin, productController.update);
+
 module.exports = router; // 🚨 THIS LINE IS CRITICAL
