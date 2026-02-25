@@ -13,7 +13,6 @@ export default function App() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     try {
       const response = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
@@ -42,38 +41,38 @@ export default function App() {
   }
 
   return (
-    <div className="p-10 font-sans">
-      <h1 className="text-2xl font-bold mb-4">StockPilot Login</h1>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
+      <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
+        <h1 className="text-2xl font-bold mb-6 text-center">StockPilot Login</h1>
 
-      <form onSubmit={handleLogin} className="space-y-3">
-        <input
-          className="border p-2 rounded w-64"
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <form onSubmit={handleLogin} className="space-y-4">
+          <input
+            className="border p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
-        <br />
+          <input
+            className="border p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
 
-        <input
-          className="border p-2 rounded w-64"
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+          <button className="bg-blue-600 hover:bg-blue-700 transition text-white w-full py-3 rounded-lg font-semibold">
+            Login
+          </button>
+        </form>
 
-        <br />
-
-        <button className="bg-blue-600 text-white px-4 py-2 rounded">
-          Login
-        </button>
-      </form>
-
-      <p className="mt-3">{message}</p>
+        {message && (
+          <p className="mt-4 text-center text-sm text-red-500">{message}</p>
+        )}
+      </div>
     </div>
   );
 }
@@ -82,6 +81,7 @@ function Dashboard({ onLogout }) {
   const [products, setProducts] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: "",
     sku: "",
@@ -96,6 +96,7 @@ function Dashboard({ onLogout }) {
 
   const fetchProducts = async () => {
     try {
+      setLoading(true);
       const token = localStorage.getItem("token");
       const res = await fetch("http://localhost:5000/api/products", {
         headers: { Authorization: `Bearer ${token}` }
@@ -104,6 +105,8 @@ function Dashboard({ onLogout }) {
       setProducts(data);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -120,7 +123,6 @@ function Dashboard({ onLogout }) {
 
   const handleCreateOrUpdate = async (e) => {
     e.preventDefault();
-
     try {
       const token = localStorage.getItem("token");
 
@@ -163,116 +165,139 @@ function Dashboard({ onLogout }) {
   };
 
   return (
-    <div className="p-10 font-sans">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">📊 StockPilot Dashboard</h1>
-        <button
-          onClick={onLogout}
-          className="bg-gray-800 text-white px-3 py-2 rounded"
-        >
-          Logout
-        </button>
-      </div>
-
-      <button
-        onClick={() => {
-          resetForm();
-          setShowForm(!showForm);
-        }}
-        className="bg-green-600 text-white px-4 py-2 rounded mb-4"
-      >
-        ➕ Add Product
-      </button>
-
-      {showForm && (
-        <form
-          onSubmit={handleCreateOrUpdate}
-          className="border p-4 rounded mb-6 space-y-2 max-w-md"
-        >
-          <input
-            className="border p-2 rounded w-full"
-            placeholder="Name"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            required
-          />
-
-          <input
-            className="border p-2 rounded w-full"
-            placeholder="SKU"
-            value={form.sku}
-            onChange={(e) => setForm({ ...form, sku: e.target.value })}
-            required
-          />
-
-          <input
-            className="border p-2 rounded w-full"
-            placeholder="Price"
-            type="number"
-            value={form.price}
-            onChange={(e) => setForm({ ...form, price: e.target.value })}
-            required
-          />
-
-          <input
-            className="border p-2 rounded w-full"
-            placeholder="Stock"
-            type="number"
-            value={form.stock}
-            onChange={(e) => setForm({ ...form, stock: e.target.value })}
-            required
-          />
-
-          <input
-            className="border p-2 rounded w-full"
-            placeholder="Low Stock Threshold"
-            type="number"
-            value={form.low_stock_threshold}
-            onChange={(e) =>
-              setForm({ ...form, low_stock_threshold: e.target.value })
-            }
-          />
-
-          <button className="bg-blue-600 text-white px-4 py-2 rounded w-full">
-            {editingProduct ? "Update Product" : "Create Product"}
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold">📊 StockPilot Dashboard</h1>
+          <button
+            onClick={onLogout}
+            className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg"
+          >
+            Logout
           </button>
-        </form>
-      )}
+        </div>
 
-      <table className="border-collapse border w-full">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border p-2">Name</th>
-            <th className="border p-2">SKU</th>
-            <th className="border p-2">Price</th>
-            <th className="border p-2">Stock</th>
-            <th className="border p-2">Status</th>
-            <th className="border p-2">Actions</th>
-          </tr>
-        </thead>
+        <div className="bg-white shadow-lg rounded-2xl p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Products</h2>
+            <button
+              onClick={() => {
+                resetForm();
+                setShowForm(!showForm);
+              }}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+            >
+              ➕ Add Product
+            </button>
+          </div>
 
-        <tbody>
-          {products.map((p) => (
-            <tr key={p.id}>
-              <td className="border p-2">{p.name}</td>
-              <td className="border p-2">{p.sku}</td>
-              <td className="border p-2">₹{p.price}</td>
-              <td className="border p-2">{p.stock}</td>
-              <td className="border p-2">
-                {p.isLowStock ? "⚠️ Low Stock" : "✅ OK"}
-              </td>
-              <td className="border p-2">
-                <button
-                  onClick={() => handleEdit(p)}
-                  className="bg-yellow-500 text-white px-2 py-1 rounded"
-                >
-                  ✏️ Edit
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+          {showForm && (
+            <form
+              onSubmit={handleCreateOrUpdate}
+              className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6"
+            >
+              <input
+                className="border p-2 rounded-lg"
+                placeholder="Name"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                required
+              />
+
+              <input
+                className="border p-2 rounded-lg"
+                placeholder="SKU"
+                value={form.sku}
+                onChange={(e) => setForm({ ...form, sku: e.target.value })}
+                required
+              />
+
+              <input
+                className="border p-2 rounded-lg"
+                placeholder="Price"
+                type="number"
+                value={form.price}
+                onChange={(e) => setForm({ ...form, price: e.target.value })}
+                required
+              />
+
+              <input
+                className="border p-2 rounded-lg"
+                placeholder="Stock"
+                type="number"
+                value={form.stock}
+                onChange={(e) => setForm({ ...form, stock: e.target.value })}
+                required
+              />
+
+              <input
+                className="border p-2 rounded-lg md:col-span-2"
+                placeholder="Low Stock Threshold"
+                type="number"
+                value={form.low_stock_threshold}
+                onChange={(e) =>
+                  setForm({ ...form, low_stock_threshold: e.target.value })
+                }
+              />
+
+              <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg md:col-span-2">
+                {editingProduct ? "Update Product" : "Create Product"}
+              </button>
+            </form>
+          )}
+
+          {loading ? (
+            <p className="text-center py-6">Loading products...</p>
+          ) : products.length === 0 ? (
+            <p className="text-center py-6 text-gray-500">No products found</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="p-3 text-left">Name</th>
+                    <th className="p-3 text-left">SKU</th>
+                    <th className="p-3 text-left">Price</th>
+                    <th className="p-3 text-left">Stock</th>
+                    <th className="p-3 text-left">Status</th>
+                    <th className="p-3 text-left">Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {products.map((p) => (
+                    <tr key={p.id} className="border-t hover:bg-gray-50">
+                      <td className="p-3">{p.name}</td>
+                      <td className="p-3">{p.sku}</td>
+                      <td className="p-3 font-medium">₹{p.price}</td>
+                      <td className="p-3">{p.stock}</td>
+                      <td className="p-3">
+                        {p.isLowStock ? (
+                          <span className="text-red-600 font-semibold">
+                            ⚠️ Low Stock
+                          </span>
+                        ) : (
+                          <span className="text-green-600 font-semibold">
+                            ✅ OK
+                          </span>
+                        )}
+                      </td>
+                      <td className="p-3">
+                        <button
+                          onClick={() => handleEdit(p)}
+                          className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-lg"
+                        >
+                          ✏️ Edit
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
